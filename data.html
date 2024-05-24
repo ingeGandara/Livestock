@@ -171,6 +171,37 @@
     // Variable para almacenar el marcador actual en el mapa
     let currentMarker = null;
 
+    function actualizarTabla() {
+    // Realiza una solicitud GET a tu API
+    fetch('/alldata')
+      .then(response => response.json()) // Convierte la respuesta en JSON
+      .then(data => {
+        // Vacía la tabla
+        tablaDatosElement.innerHTML = '';
+
+        // Agrega los nuevos datos a la tabla
+        data.forEach(registro => {
+          const fila = document.createElement('tr');
+
+          // Añade las celdas a la fila
+          fila.innerHTML = `
+            <td>${registro.remitente}</td>
+            <td>${registro.fechaHora}</td>
+            <td>${registro.latitud}</td>
+            <td>${registro.longitud}</td>
+            <td>${registro.acciones}</td>
+          `;
+
+          // Añade la fila a la tabla
+          tablaDatosElement.appendChild(fila);
+        });
+      });
+  }
+
+  // Actualiza la tabla cada 5 segundos
+  setInterval(actualizarTabla, 5000);
+
+
     fetch('/alldata')
       .then(response => response.json())
       .then(data => {
