@@ -7,7 +7,7 @@ const dotenv = require('dotenv');
 dotenv.config(); // Cargar variables de entorno desde .env
 
 const IP = '0.0.0.0'; // Escucha en todas las interfaces de red
-const PUERTO = process.env.UDP_PORT;
+const PUERTO = 65535;
 // Configuración de la base de datos MySQL
 const conexionDB = mysql.createConnection({
   host: process.env.DB_HOST,
@@ -58,8 +58,20 @@ function formatearMensaje(mensaje) {
   };
 }
 
+// Almacenar los mensajes procesados
+const mensajesProcesados = new Set();
+
 // Insertar un mensaje en la base de datos
 function insertarMensaje(remitente, mensaje) {
+  // Verificar si el mensaje ya ha sido procesado
+  if (mensajesProcesados.has(mensaje)) {
+    console.log('Mensaje duplicado detectado, no se insertará en la base de datos');
+    return;
+  }
+
+  // Agregar el mensaje a los mensajes procesados
+  mensajesProcesados.add(mensaje);
+
   const datosFormateados = formatearMensaje(mensaje);
 
   if (datosFormateados) { // Verificar que los datos sean válidos
@@ -80,17 +92,15 @@ function insertarMensaje(remitente, mensaje) {
         if (error) {
           console.error('Error al insertar el mensaje en la base de datos:', error);
         } else {
-          console.log('Mensaje almacenado en la base de datos:', mensaje);
+          console.log('Mensaje almacenado en la base de datos: ', mensaje);
           console.log();
         }
       }
     );
   }
 }
-
 // Crear el servidor UDP
 const udpServer = dgram.createSocket('udp4');
-
 udpServer.on('error', (err) => {
   console.error(`Error en el servidor UDP: ${err.stack}`);
   udpServer.close();
