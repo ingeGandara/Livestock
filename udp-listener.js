@@ -7,7 +7,7 @@ const dotenv = require('dotenv');
 dotenv.config(); // Cargar variables de entorno desde .env
 
 const IP = '0.0.0.0'; // Escucha en todas las interfaces de red
-const PUERTO = proccess.env.UDP_PORT; 
+const PUERTO = process.env.UDP_PORT; 
 // Configuración de la base de datos MySQL
 const conexionDB = mysql.createConnection({
   host: process.env.DB_HOST,
